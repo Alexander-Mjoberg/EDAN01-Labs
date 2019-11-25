@@ -25,15 +25,17 @@ public class Lab2 {
 	
 	public static void logistics(int graph_size,int start,int n_dests,int n_edges,int[] dest,int[] from,int[] to,int[] cost) {
 		Store store = new Store();
+		//Create vertices that will also store all the edges using domain.
 		IntVar[][] graph_edges = new IntVar[n_dests][graph_size];
 		for (int i = 0; i < n_dests; i++) {
 			for (int j = 0; j < graph_size; j++) {
-				graph_edges[i][j] = new IntVar(store, "edge(" + (i + 1) + ", " + (j + 1) + ")");
+				graph_edges[i][j] = new IntVar(store, "vertice(" + (i + 1) + ", " + (j + 1) + ")");
+				//nodes that are not the start node may loop to themselves
 				if (j != (start - 1)) {
 					if (j != dest[i] - 1) {
 						graph_edges[i][j].addDom(j + 1, j + 1);
 					} else {
-						// bara destinationer kan gå tillbaka till start punkten
+						// destinations can return to start.
 						graph_edges[i][j].addDom(start, start);
 					}
 				}
@@ -49,13 +51,13 @@ public class Lab2 {
 			store.impose(new Subcircuit(graph_edges[i]));
 		}
 		
-		// create boolean array
+		// create boolean array for selected edges.
 		BooleanVar[] chosenEdges = new BooleanVar[n_edges];
 		for (int i = 0; i < n_edges; i++) {
-			chosenEdges[i] = new BooleanVar(store);
+			chosenEdges[i] = new BooleanVar(store,("edge (" + from[i] + ","+ to[i] + ")" + " with cost " + cost[i]));
 		}
 
-		// kostnad för en edge får bara räknas en gång.
+		// Create a constraint so edge cost is only counted once.
 		for (int j = 0; j < n_edges; j++) {
 			ArrayList<PrimitiveConstraint> constraintList = new ArrayList<PrimitiveConstraint>();
 			for (int i = 0; i < n_dests; i++) {
@@ -65,13 +67,18 @@ public class Lab2 {
 			store.impose(new Reified(new Or(constraintList), chosenEdges[j]));
 		}
 
+		//Set up and perform search.
 		IntVar destCost = new IntVar(store, "Cost", 0, sum(cost));
 		store.impose(new SumWeight(chosenEdges, cost, destCost));
-
 		Search<IntVar> search = new DepthFirstSearch<IntVar>();
 		SelectChoicePoint<IntVar> select = new SimpleMatrixSelect<IntVar>(graph_edges, null, new IndomainMin<IntVar>());
 		boolean result = search.labeling(store, select, destCost);
-		 
+		System.out.println("Printing selected edges..");
+		for (BooleanVar chosenEdge : chosenEdges) {
+			if (chosenEdge.value() == 1) {
+				System.out.println(chosenEdge.id);
+			}
+		}
 	}
 	
 	public static int sum(int[] v) {
