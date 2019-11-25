@@ -1,4 +1,19 @@
+import java.util.ArrayList;
+
+import org.jacop.constraints.Or;
+import org.jacop.constraints.PrimitiveConstraint;
+import org.jacop.constraints.Reified;
+import org.jacop.constraints.Subcircuit;
+import org.jacop.constraints.SumWeight;
+import org.jacop.constraints.XeqC;
+import org.jacop.core.BooleanVar;
+import org.jacop.core.IntVar;
 import org.jacop.core.Store;
+import org.jacop.search.DepthFirstSearch;
+import org.jacop.search.IndomainMin;
+import org.jacop.search.Search;
+import org.jacop.search.SelectChoicePoint;
+import org.jacop.search.SimpleMatrixSelect;
 
 public class Lab2 {
 
@@ -10,8 +25,62 @@ public class Lab2 {
 	
 	public static void logistics(int graph_size,int start,int n_dests,int n_edges,int[] dest,int[] from,int[] to,int[] cost) {
 		Store store = new Store();
+		IntVar[][] graph_edges = new IntVar[n_dests][graph_size];
+		for (int i = 0; i < n_dests; i++) {
+			for (int j = 0; j < graph_size; j++) {
+				graph_edges[i][j] = new IntVar(store, "edge(" + (i + 1) + ", " + (j + 1) + ")");
+				if (j != (start - 1)) {
+					if (j != dest[i] - 1) {
+						graph_edges[i][j].addDom(j + 1, j + 1);
+					} else {
+						// bara destinationer kan gå tillbaka till start punkten
+						graph_edges[i][j].addDom(start, start);
+					}
+				}
+			}
+		}
+
+		// add all the edges, add edges in both directions
+		for (int i = 0; i < n_dests; i++) {
+			for (int j = 0; j < n_edges; j++) {
+				graph_edges[i][to[j] - 1].addDom(from[j], from[j]);
+				graph_edges[i][from[j] - 1].addDom(to[j], to[j]);
+			}
+			store.impose(new Subcircuit(graph_edges[i]));
+		}
+		
+		// create boolean array
+		BooleanVar[] chosenEdges = new BooleanVar[n_edges];
+		for (int i = 0; i < n_edges; i++) {
+			chosenEdges[i] = new BooleanVar(store);
+		}
+
+		// kostnad för en edge får bara räknas en gång.
+		for (int j = 0; j < n_edges; j++) {
+			ArrayList<PrimitiveConstraint> constraintList = new ArrayList<PrimitiveConstraint>();
+			for (int i = 0; i < n_dests; i++) {
+				constraintList.add(new XeqC(graph_edges[i][from[j] - 1], to[j]));
+				constraintList.add(new XeqC(graph_edges[i][to[j] - 1], from[j]));
+			}
+			store.impose(new Reified(new Or(constraintList), chosenEdges[j]));
+		}
+
+		IntVar destCost = new IntVar(store, "Cost", 0, sum(cost));
+		store.impose(new SumWeight(chosenEdges, cost, destCost));
+
+		Search<IntVar> search = new DepthFirstSearch<IntVar>();
+		SelectChoicePoint<IntVar> select = new SimpleMatrixSelect<IntVar>(graph_edges, null, new IndomainMin<IntVar>());
+		boolean result = search.labeling(store, select, destCost);
+		 
 	}
 	
+	public static int sum(int[] v) {
+		int sum = 0;
+		for (int i = 0; i < v.length; i++) {
+			sum += v[i];
+		}
+		return sum;
+	}
 	
 	
 	//Helper class to handle input
