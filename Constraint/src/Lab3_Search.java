@@ -1,14 +1,14 @@
 
 
 import org.jacop.constraints.Not;
-import org.jacop.constraints.PrimitiveConstraint;
-import org.jacop.constraints.XeqC;
 import org.jacop.core.FailException;
 import org.jacop.core.IntDomain;
 import org.jacop.core.IntVar;
 import org.jacop.core.Store;
 
 import lab3_ChoicePoints.ChoicePoint;
+import lab3_ChoicePoints.LargestDomain;
+import lab3_ChoicePoints.SmallestDomain;
 import lab3_ChoicePoints.Splitsearch1;
 import lab3_ChoicePoints.Splitsearch2;
 
@@ -114,6 +114,10 @@ public class Lab3_Search  {
 	    case 1 : choice = new Splitsearch1(vars,store);
 	    break;
 	    case 2 : choice = new Splitsearch2(vars,store);
+	    break;
+	    case 3 : choice = new SmallestDomain(vars,store);
+	    break;
+	    case 4 : choice = new LargestDomain(vars,store);
 	    break;
 	    default : choice = new ChoicePoint(vars,store);
 	    }

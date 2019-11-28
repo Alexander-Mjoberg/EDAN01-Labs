@@ -50,7 +50,7 @@ public class ChoicePoint {
 	 * example constraint assigning a selected value
 	 */
 	public PrimitiveConstraint getConstraint() {
-	    return new XeqC(var, value);
+		return new XeqC(var, value);
 	}
 
 }

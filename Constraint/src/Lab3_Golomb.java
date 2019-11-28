@@ -39,12 +39,6 @@ import org.jacop.constraints.XplusClteqZ;
 import org.jacop.constraints.XplusYeqZ;
 import org.jacop.core.IntVar;
 import org.jacop.core.Store;
-import org.jacop.search.DepthFirstSearch;
-import org.jacop.search.IndomainMin;
-import org.jacop.search.InputOrderSelect;
-import org.jacop.search.PrintOutListener;
-import org.jacop.search.Search;
-import org.jacop.search.SelectChoicePoint;
 
 /**
  * 
