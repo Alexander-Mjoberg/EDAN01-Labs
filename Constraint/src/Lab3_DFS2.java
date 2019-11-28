@@ -3,11 +3,13 @@
 import org.jacop.constraints.Not;
 import org.jacop.constraints.PrimitiveConstraint;
 import org.jacop.constraints.XeqC;
-import org.jacop.constraints.XlteqC;
 import org.jacop.core.FailException;
 import org.jacop.core.IntDomain;
 import org.jacop.core.IntVar;
 import org.jacop.core.Store;
+
+import lab3_ChoicePoints.ChoicePoint;
+import lab3_ChoicePoints.Splitsearch1;
 
 /**
  * Implements Simple Depth First Search .
@@ -16,7 +18,7 @@ import org.jacop.core.Store;
  * @version 4.1
  */
 
-public class Lab3_Split1  {
+public class Lab3_DFS2  {
 
     boolean trace = false;
 
@@ -49,9 +51,14 @@ public class Lab3_Split1  {
      */
 	public int nbrOfNodes = 0;
 	public int wrongDecisions = 0;
+    /**
+     * 
+     */
+	int searchSelection;
 
-    public Lab3_Split1(Store s) {
+    public Lab3_DFS2(Store s, int searchSelection) {
 	store = s;
+	this.searchSelection = searchSelection;
     }
 
 
@@ -102,8 +109,12 @@ public class Lab3_Split1  {
 
 		return costVariable == null; // true is satisfiability search and false if minimization
 	    }
-
- 	    choice = new ChoicePoint(vars);
+	    switch (searchSelection) {
+	    case 1 : choice = new Splitsearch1(vars,store);
+	    break;
+	    default : choice = new ChoicePoint(vars,store);
+	    }
+ 	    
 
 	    levelUp();
 
@@ -157,6 +168,7 @@ public class Lab3_Split1  {
 
 	for (int i = 0; i < variablesToReport.length; i++) 
 	    System.out.print (variablesToReport[i] + " ");
+	System.out.println("\nSolutions stats: "+ nbrOfNodes + " nodes, " + wrongDecisions + " wrong decisions");
 	System.out.println ("\n---------------");
     }
 
@@ -168,55 +180,4 @@ public class Lab3_Split1  {
 	costVariable = v;
     }
 
-    public class ChoicePoint {
-
-	IntVar var;
-	IntVar[] searchVariables;
-	int value;
-
-	public ChoicePoint (IntVar[] v) {
-	    var = selectVariable(v);
-	    value = selectValue(var);
-	}
-
-	public IntVar[] getSearchVariables() {
-	    return searchVariables;
-	}
-
-	IntVar selectVariable(IntVar[] v) {
-			if (v.length != 0) {
-				//System.out.println(java.util.Arrays.asList(v));
-				if (v[0].min() == v[0].max()) { // Vi tar bara bort den första noden om den bara hara ett värde i domän
-					searchVariables = new IntVar[v.length - 1];
-					for (int i = 0; i < v.length - 1; i++) {
-						searchVariables[i] = v[i + 1];
-					}
-				} else { // Men annars så låter vi inputten vara
-					searchVariables = new IntVar[v.length];
-					for (int i = 0; i < v.length; i++) {
-						searchVariables[i] = v[i];
-					}
-				}
-
-		return v[0];
-
-	    }
-	    else {
-		System.err.println("Zero length list of variables for labeling");
-		return new IntVar(store);
-	    }
-	}
-
-
-	int selectValue(IntVar v) {
-	    return (v.min() + v.max())/2;
-		//return v.min();
-	}
-
-	
-	//Här ska vi tilldela värden om det är större än C. LtEq verkar funka bättre än Lt..
-	public PrimitiveConstraint getConstraint() {
-	    return new XlteqC(var, value);
-	}
-    }
 }

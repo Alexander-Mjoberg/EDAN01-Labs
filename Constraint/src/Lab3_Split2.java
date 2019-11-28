@@ -3,6 +3,7 @@
 import org.jacop.constraints.Not;
 import org.jacop.constraints.PrimitiveConstraint;
 import org.jacop.constraints.XeqC;
+import org.jacop.constraints.XgteqC;
 import org.jacop.constraints.XlteqC;
 import org.jacop.core.FailException;
 import org.jacop.core.IntDomain;
@@ -16,7 +17,7 @@ import org.jacop.core.Store;
  * @version 4.1
  */
 
-public class Lab3_Split1  {
+public class Lab3_Split2  {
 
     boolean trace = false;
 
@@ -50,7 +51,7 @@ public class Lab3_Split1  {
 	public int nbrOfNodes = 0;
 	public int wrongDecisions = 0;
 
-    public Lab3_Split1(Store s) {
+    public Lab3_Split2(Store s) {
 	store = s;
     }
 
@@ -207,16 +208,15 @@ public class Lab3_Split1  {
 	    }
 	}
 
-
+	//Integer division needs to round up when there is a remainder, otherwise you will get stuck
 	int selectValue(IntVar v) {
-	    return (v.min() + v.max())/2;
-		//return v.min();
+		return ((v.max() + v.min()) % 2 == 0) ? ((v.max() + v.min()) / 2) : ((v.max() + v.min() + 1) / 2);
 	}
 
 	
 	//Här ska vi tilldela värden om det är större än C. LtEq verkar funka bättre än Lt..
 	public PrimitiveConstraint getConstraint() {
-	    return new XlteqC(var, value);
+	    return new XgteqC(var, value);
 	}
     }
 }

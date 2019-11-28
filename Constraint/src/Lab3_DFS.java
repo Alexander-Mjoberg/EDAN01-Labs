@@ -156,6 +156,7 @@ public class Lab3_DFS  {
 
 	for (int i = 0; i < variablesToReport.length; i++) 
 	    System.out.print (variablesToReport[i] + " ");
+	System.out.println("\nSolutions stats: "+ nbrOfNodes + " nodes, " + wrongDecisions + " wrong decisions");
 	System.out.println ("\n---------------");
     }
 
@@ -186,13 +187,12 @@ public class Lab3_DFS  {
 	 * example variable selection; input order
 	 */ 
 	IntVar selectVariable(IntVar[] v) {
+		//System.out.println(java.util.Arrays.asList(v));
 	    if (v.length != 0) {
-
 		searchVariables = new IntVar[v.length-1];
 		for (int i = 0; i < v.length-1; i++) {
 		    searchVariables[i] = v[i+1]; 
 		}
-
 		return v[0];
 
 	    }
