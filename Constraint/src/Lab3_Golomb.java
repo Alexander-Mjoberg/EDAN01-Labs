@@ -168,7 +168,7 @@ public class Lab3_Golomb {
 
 	IntVar cost = numbers[numbers.length - 1];
 
-	Lab3_DFS search = new Lab3_DFS(store);
+	Lab3_Split1 search = new Lab3_Split1(store);
 	search.setVariablesToReport(numbers);
 	search.setCostVariable(cost);
 

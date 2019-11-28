@@ -19,7 +19,7 @@ public class Lab2 {
 
 	public static void main(String[] args) {
 		//Change the desired test case here
-		TestCase testCase = new TestCase(1);
+		TestCase testCase = new TestCase(3);
 		logistics(testCase.graph_size,testCase.start,testCase.n_dests,testCase.n_edges,testCase.dest,testCase.from,testCase.to,testCase.cost);
 	}
 	
@@ -69,6 +69,7 @@ public class Lab2 {
 
 		//Set up and perform search.
 		IntVar destCost = new IntVar(store, "Cost", 0, sum(cost));
+		//The cost is summed up here by connecting the chosen edges to the cost and storing the sum in destCost
 		store.impose(new SumWeight(chosenEdges, cost, destCost));
 		Search<IntVar> search = new DepthFirstSearch<IntVar>();
 		SelectChoicePoint<IntVar> select = new SimpleMatrixSelect<IntVar>(graph_edges, null, new IndomainMin<IntVar>());

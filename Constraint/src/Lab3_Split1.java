@@ -3,6 +3,7 @@
 import org.jacop.constraints.Not;
 import org.jacop.constraints.PrimitiveConstraint;
 import org.jacop.constraints.XeqC;
+import org.jacop.constraints.XlteqC;
 import org.jacop.core.FailException;
 import org.jacop.core.IntDomain;
 import org.jacop.core.IntVar;
@@ -15,7 +16,7 @@ import org.jacop.core.Store;
  * @version 4.1
  */
 
-public class Lab3_DFS  {
+public class Lab3_Split1  {
 
     boolean trace = false;
 
@@ -49,7 +50,7 @@ public class Lab3_DFS  {
 	public int nbrOfNodes = 0;
 	public int wrongDecisions = 0;
 
-    public Lab3_DFS(Store s) {
+    public Lab3_Split1(Store s) {
 	store = s;
     }
 
@@ -182,16 +183,20 @@ public class Lab3_DFS  {
 	    return searchVariables;
 	}
 
-	/**
-	 * example variable selection; input order
-	 */ 
 	IntVar selectVariable(IntVar[] v) {
-	    if (v.length != 0) {
-
-		searchVariables = new IntVar[v.length-1];
-		for (int i = 0; i < v.length-1; i++) {
-		    searchVariables[i] = v[i+1]; 
-		}
+			if (v.length != 0) {
+				if (v[0].min() == v[0].max()) { // Vi tar bara bort den första noden om den bara hara ett värde i domän
+					searchVariables = new IntVar[v.length - 1];
+					for (int i = 0; i < v.length - 1; i++) {
+						searchVariables[i] = v[i + 1];
+					}
+				} else { // Men annars så låter vi inputten vara
+					searchVariables = new IntVar[v.length];
+					for (int i = 0; i < v.length - 1; i++) {
+						System.out.println(v[i].value());
+						searchVariables[i] = v[i];
+					}
+				}
 
 		return v[0];
 
@@ -206,14 +211,17 @@ public class Lab3_DFS  {
 	 * example value selection; indomain_min
 	 */ 
 	int selectValue(IntVar v) {
-	    return v.min();
+	    return (v.min() + v.max())/2;
+		//return v.min();
 	}
 
 	/**
 	 * example constraint assigning a selected value
 	 */
+	
+	//Här ska vi tilldela värden om det är större än C
 	public PrimitiveConstraint getConstraint() {
-	    return new XeqC(var, value);
+	    return new XlteqC(var, value);
 	}
     }
 }
