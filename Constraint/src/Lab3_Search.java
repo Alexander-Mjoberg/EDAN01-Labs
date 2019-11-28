@@ -10,6 +10,7 @@ import org.jacop.core.Store;
 
 import lab3_ChoicePoints.ChoicePoint;
 import lab3_ChoicePoints.Splitsearch1;
+import lab3_ChoicePoints.Splitsearch2;
 
 /**
  * Implements Simple Depth First Search .
@@ -18,7 +19,7 @@ import lab3_ChoicePoints.Splitsearch1;
  * @version 4.1
  */
 
-public class Lab3_DFS2  {
+public class Lab3_Search  {
 
     boolean trace = false;
 
@@ -56,7 +57,7 @@ public class Lab3_DFS2  {
      */
 	int searchSelection;
 
-    public Lab3_DFS2(Store s, int searchSelection) {
+    public Lab3_Search(Store s, int searchSelection) {
 	store = s;
 	this.searchSelection = searchSelection;
     }
@@ -111,6 +112,8 @@ public class Lab3_DFS2  {
 	    }
 	    switch (searchSelection) {
 	    case 1 : choice = new Splitsearch1(vars,store);
+	    break;
+	    case 2 : choice = new Splitsearch2(vars,store);
 	    break;
 	    default : choice = new ChoicePoint(vars,store);
 	    }
