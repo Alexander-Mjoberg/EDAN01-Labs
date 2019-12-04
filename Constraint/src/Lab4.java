@@ -21,7 +21,8 @@ import org.jacop.search.SmallestDomain;
 public class Lab4 {
 
 	public static void main(String[] args) {
-		TestCase3 testCase = new TestCase3();
+		//Change the testcase here.
+		TestCase6 testCase = new TestCase6();
 		AutoRegressionFilter(testCase.del_add,testCase.del_mul,testCase.number_add,testCase.number_mul,testCase.n,testCase.add,testCase.mul,testCase.dependencies,testCase.last);
 	}
 	
@@ -57,7 +58,7 @@ public class Lab4 {
 			mulDurationsY[i] = new IntVar(store,"MultiplicationDY",1,1);
 			allOperations[multiplications[i]-1] = op;
 		}
-		//Calculate endtimes
+		//Calculate endtimes for operations. 
 		IntVar[] allOperationsEndTime = new IntVar[allOperations.length];
 		for (int i = 0; i < allOperations.length; i++) {
 			allOperationsEndTime[i] = new IntVar(store,"endtime op " + i,0,1500);
@@ -68,26 +69,12 @@ public class Lab4 {
 				store.impose(new XplusYeqZ(allOperations[i],mulDurations[0],allOperationsEndTime[i]));
 			}
 		}
-		//Build dependencies
+		//Build dependencies in graph
 		for (int i = 0; i<dependencies.length;i++) {
 			for (int dep: dependencies[i]) {
 				store.impose(new XgteqY(allOperationsEndTime[dep-1],allOperations[i]));
 			}
 		}
-//		//Add something so last ops are enforced to run last
-//		ArrayList<IntVar> notLast = new ArrayList<IntVar>();
-//		for (int i = 0; i<nbrOfOperations; i++) 
-//			notLast.add(allOperations[i]);
-//		for (Integer removeNo : lastOperations)
-//			notLast.remove(allOperations[removeNo-1]);
-////		System.out.println(notLast);
-//		IntVar maxNonLast = new IntVar(store,"Max not last",0,1500);
-//		Constraint cNonLast = new Max(notLast.toArray(new IntVar[nbrOfOperations-lastOperations.length]),maxNonLast);
-//		store.impose(cNonLast);
-//		System.out.println(maxNonLast);
-//		System.out.println();
-//		for (Integer opNo : lastOperations)
-//			store.impose(new XgteqY(allOperations[opNo-1],maxNonLast));
 		
 		//Impose squares
 		store.impose(new Diff2(addOperations,addOperationsY,addDurations,addDurationsY));
@@ -390,7 +377,6 @@ public class Lab4 {
 		{},
 		{},
 		};
-
 	}
 
 }
