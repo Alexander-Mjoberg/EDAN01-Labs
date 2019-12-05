@@ -1,12 +1,6 @@
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.TreeMap;
-
-import org.jacop.constraints.Constraint;
 import org.jacop.constraints.Diff2;
 import org.jacop.constraints.Max;
-import org.jacop.constraints.SumInt;
-import org.jacop.constraints.XgtY;
 import org.jacop.constraints.XgteqY;
 import org.jacop.constraints.XplusYeqZ;
 import org.jacop.core.IntVar;
