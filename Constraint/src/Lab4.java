@@ -25,10 +25,10 @@ public class Lab4 {
 		long start = System.currentTimeMillis();
 		IntVar[] allOperations = new IntVar[nbrOfOperations];
 		//Addition squares
-		IntVar[] addOperations = new IntVar[additions.length];
-		IntVar[] addOperationsY = new IntVar[additions.length];
-		IntVar[] addDurations = new IntVar[additions.length];
-		IntVar[] addDurationsY = new IntVar[additions.length];
+		IntVar[] addOperations = new IntVar[additions.length]; //X-start position of box
+		IntVar[] addOperationsY = new IntVar[additions.length]; //Y-start position of box
+		IntVar[] addDurations = new IntVar[additions.length]; //X-length of box
+		IntVar[] addDurationsY = new IntVar[additions.length]; //Y-length of box
 		//Multiplication squares
 		IntVar[] mulOperations = new IntVar[multiplications.length];
 		IntVar[] mulOperationsY = new IntVar[multiplications.length];
@@ -74,15 +74,18 @@ public class Lab4 {
 		store.impose(new Diff2(addOperations,addOperationsY,addDurations,addDurationsY));
 		store.impose(new Diff2(mulOperations,mulOperationsY,mulDurations,mulDurationsY));
 		
+		//Find the max time for when all ops are finished
 		IntVar finish = new IntVar(store,"finish",0,1500);
 		store.impose(new Max(allOperationsEndTime,finish));
+		
+		//Do search
 		Search<IntVar> label = new DepthFirstSearch<IntVar>();
-		SelectChoicePoint<IntVar> select = new SimpleSelect<IntVar>(
-                allOperations,new SmallestDomain<IntVar>(),new IndomainMin<IntVar>());
+		SelectChoicePoint<IntVar> select = new SimpleSelect<IntVar>(allOperations,new SmallestDomain<IntVar>(),new IndomainMin<IntVar>());
 		boolean result = label.labeling(store, select,finish);
+		
 		if(result) {
 			long end = System.currentTimeMillis();
-			TreeMap<Integer,IntVar> sortedOperations = new TreeMap<Integer,IntVar>();
+			TreeMap<Integer,IntVar> sortedOperations = new TreeMap<Integer,IntVar>(); //This won't work when there are multiple resources, as each key can only have one entry.
 			for (IntVar op : allOperations) {
 				sortedOperations.put(op.value(),op);
 			}
